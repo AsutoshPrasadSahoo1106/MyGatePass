@@ -57,21 +57,27 @@ exports.getPendingGatePassesForWarden = async (req, res) => {
 };
 
 // Get all approved gate passes for the guard
+// Get all approved gate passes for the guard
 exports.getApprovedGatePassesForGuard = async (req, res) => {
     try {
         const approvedGatePasses = await GatePass.find({
             status: 'Approved',
-            sentOutBy: { $exists: false } // Ensure the sentOutBy field is not present
+            $or: [
+                { sentOutBy: { $exists: false } }, // Exclude if sentOutBy field is present
+                { giveEntryBy: { $exists: false } } // Exclude if giveEntryBy field is present
+            ]
         })
             .populate('user', 'name email roomNo hostel phoneNo') // Populate user details
             .sort({ createdAt: -1 });
 
         res.status(200).json(approvedGatePasses);
     } catch (error) {
-        console.error("Error retrieving approved gate passes:", error); // Log the error
-        res.status(500).json({ message: "Error retrieving approved gate passes." });
+        console.error("Error retrieving approved gate passes:", error);
+        res.status(500).json({ message: "Error retrieving approved gate passes.", error: error.message });
     }
 };
+
+
 
 // Approve or reject a gate pass
 exports.updateGatePassStatus = async (req, res) => {

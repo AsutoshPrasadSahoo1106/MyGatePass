@@ -1,5 +1,8 @@
+// Verify OTP
+
 const OTP = require('../models/otpModel'); // Adjust the path as necessary
 const User = require('../models/userModel'); // Import User model for user reference
+const GatePass = require('../models/gatePassModel'); // Import GatePass model
 const otpGenerator = require('otp-generator'); // OTP generator library
 
 // Generate and send OTP
@@ -18,16 +21,23 @@ exports.generateOTP = async (req, res) => {
         });
 
         await otpEntry.save();
+
         // Here you would send the OTP via SMS/email (using a service like Twilio)
-        res.status(201).json({ message: "OTP generated and sent.", otp });
+        // For example: await sendOtpToUser(req.user.id, otp);
+
+        res.status(201).json({ message: "OTP generated and sent." });
     } catch (error) {
-        res.status(500).json({ message: "Error generating OTP.", error });
+        console.error("Error generating OTP:", error); // Log the error
+        res.status(500).json({ message: "Error generating OTP." });
     }
 };
 
+
+
+
 // Verify OTP
 exports.verifyOTP = async (req, res) => {
-    const { otp, gatePassId } = req.body; // Get OTP and gatePassId from the request body
+    const { otp, gatePassId, action } = req.body; // Get OTP, gatePassId, and action from the request body
 
     try {
         const otpEntry = await OTP.findOne({ otp, gatePassId, user: req.user.id }); // Verify OTP with gatePassId and user ID
@@ -39,8 +49,38 @@ exports.verifyOTP = async (req, res) => {
 
         // Proceed with the action that required OTP verification
         await OTP.deleteOne({ _id: otpEntry._id }); // Remove the used OTP entry
-        res.status(200).json({ message: "OTP verified successfully." });
+
+        // Call updateGatePassStatus to update the gate pass based on the action
+        const updateResponse = await updateGatePassStatus(gatePassId, action, req.user.id);
+        if (updateResponse.error) {
+            return res.status(500).json({ message: updateResponse.message });
+        }
+
+        res.status(200).json({ message: "OTP verified successfully and gate pass updated." });
     } catch (error) {
-        res.status(500).json({ message: "Error verifying OTP.", error });
+        console.error("Error verifying OTP:", error); // Log the error
+        res.status(500).json({ message: "Error verifying OTP." });
+    }
+};
+
+// Function to update gate pass status
+const updateGatePassStatus = async (gatePassId, action, userId) => {
+    try {
+        const gatePass = await GatePass.findById(gatePassId);
+        if (!gatePass) return { error: true, message: "Gate pass not found." };
+
+        if (action === 'out') {
+            gatePass.sentOutBy = userId; // Update sentOutBy to the guard's ID
+            gatePass.actualOutTime = new Date(); // Store the current time as actualOutTime
+        } else if (action === 'in') {
+            gatePass.giveEntryBy = userId; // Update giveEntryBy to the guard's ID
+            gatePass.actualInTime = new Date(); // Store the current time as actualInTime
+        }
+
+        await gatePass.save();
+        return { error: false }; // Indicate success
+    } catch (error) {
+        console.error("Error updating gate pass status:", error); // Log the error
+        return { error: true, message: "Error updating gate pass status." };
     }
 };
