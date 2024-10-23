@@ -1,0 +1,126 @@
+/* General Styles */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url(back_2.jpeg);
+  /* background: linear-gradient(to bottom, red 60%, white 60%); */
+}
+
+.app-container {
+  text-align: center;
+  padding: 20px;
+  /* background: rgb(122, 239, 243); */
+}
+
+/* Header Section */
+.header {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  border: 2px solid black;
+}
+
+.header h1 {
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+.logo {
+  height: 80px;
+}
+
+/* Login Cards Section */
+.login-cards {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background-color: white;
+  flex: 1 1 30%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 250px;
+  margin: 10px;
+  border: 2px solid black;
+}
+
+.icon {
+  font-size: 100px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 10px 0;
+}
+
+p {
+  font-size: 16px;
+  color: #666;
+}
+
+.login-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: darkred;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header h1 {
+      font-size: 20px;
+  }
+
+  .login-cards {
+      flex-direction: column;
+  }
+
+  .card {
+      max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+      font-size: 18px;
+  }
+
+  .logo {
+      height: 60px;
+  }
+
+  .card h2 {
+      font-size: 18px;
+  }
+
+  .card p {
+      font-size: 14px;
+  }
+
+  .icon {
+      font-size: 40px;
+  }
+
+  .login-btn {
+      font-size: 14px;
+      padding: 8px 16px;
+  }
+}
