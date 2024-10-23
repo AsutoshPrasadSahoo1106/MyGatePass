@@ -1,5 +1,8 @@
 const GatePass = require('../models/gatePassModel'); // Adjust the path as necessary
 const User = require('../models/userModel'); // Make sure to import User model
+const Notification = require('../models/notificationModel'); // Adjust the path as necessary
+const { createNotification } = require('./notificationController'); // Adjust the path as necessary
+
 
 // Create a new gate pass
 exports.createGatePass = async (req, res) => {
@@ -97,8 +100,21 @@ exports.updateGatePassStatus = async (req, res) => {
 
         await gatePass.save();
 
-        // Create an entry in the AuditTrail (if applicable)
-        // Code for logging changes...
+        // Create a notification message
+        let notificationMessage;
+        if (status === 'Approved') {
+            notificationMessage = `Your gate pass has been approved.`;
+        } else if (status === 'Rejected') {
+            notificationMessage = `Your gate pass has been rejected. Reason: ${rejectionReason}`;
+        }
+
+        // Create a new notification
+        const newNotification = new Notification({
+            user: gatePass.user, // Assuming gatePass.user is the user ID of the student
+            message: notificationMessage,
+        });
+
+        await newNotification.save(); // Save the notification
 
         res.status(200).json(gatePass);
     } catch (error) {
@@ -106,3 +122,4 @@ exports.updateGatePassStatus = async (req, res) => {
         res.status(500).json({ message: "Error updating gate pass status." });
     }
 };
+

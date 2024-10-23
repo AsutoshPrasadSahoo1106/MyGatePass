@@ -4,6 +4,8 @@ const OTP = require('../models/otpModel'); // Adjust the path as necessary
 const User = require('../models/userModel'); // Import User model for user reference
 const GatePass = require('../models/gatePassModel'); // Import GatePass model
 const otpGenerator = require('otp-generator'); // OTP generator library
+const Notification = require('../models/notificationModel'); // Import Notification model
+
 
 // Generate and send OTP
 exports.generateOTP = async (req, res) => {
@@ -22,10 +24,19 @@ exports.generateOTP = async (req, res) => {
 
         await otpEntry.save();
 
+        // Create a notification for the generated OTP
+        const notificationMessage = `Your OTP for gate pass is ${otp}. It is valid for 5 minutes.`;
+        const newNotification = new Notification({
+            user: req.user.id, // Link notification to the user
+            message: notificationMessage,
+        });
+
+        await newNotification.save(); // Save the notification
+
         // Here you would send the OTP via SMS/email (using a service like Twilio)
         // For example: await sendOtpToUser(req.user.id, otp);
 
-        res.status(201).json({ message: "OTP generated and sent." });
+        res.status(201).json({ message: "OTP generated and notification sent." });
     } catch (error) {
         console.error("Error generating OTP:", error); // Log the error
         res.status(500).json({ message: "Error generating OTP." });
