@@ -1,0 +1,36 @@
+/* src/styles/GuardDashboard.css */
+
+.dashboard-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+h2 {
+    color: #1e3c72;
+}
+
+h4 {
+    color: #2a5298;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.btn-success, .btn-danger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-success svg, .btn-danger svg {
+    margin-right: 5px;
+}
+
+.loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #1e3c72;
+    margin-top: 50px;
+}

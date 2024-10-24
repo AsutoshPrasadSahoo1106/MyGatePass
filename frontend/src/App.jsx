@@ -8,15 +8,16 @@ import StudentRegister from './pages/StudentRegister/StudentResister';
 import WardenLogin from './pages/WardenLogin/WardenLogin';
 import WardenRegister from './pages/WardenRegister/WardenRegister';
 import GuardLogin from './pages/GuardLogin/GaurdLogin';
-import GuardRegister from './pages/GuardRegister/GaurdResister';
+import GuardRegister from './pages/GuardRegister/GaurdRegister';
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
 import WardenDashboard from './pages/WardenDashboard/WardenDashboard';
 import GuardDashboard from './pages/GaurdDashboard/GaurdDashboard';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
     return (
         <Router>
-            <Navbar />
+            
             <Routes>
                 {/* Home Page */}
                 <Route path="/" element={<HomePage />} />

@@ -1,35 +1,57 @@
+/* src/components/StudentDashboard.css */
+
+.dashboard-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.dashboard-header h2 {
+    color: #1e3c72;
+}
+
 .notification-icon {
     position: relative;
     cursor: pointer;
+    color: #1e3c72;
 }
 
 .notification-count {
     position: absolute;
     top: -5px;
     right: -10px;
-    background-color: red;
-    color: white;
+    background-color: #dc3545;
+    color: #fff;
     border-radius: 50%;
-    padding: 0 5px;
-    font-size: 12px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
 }
 
 .notification-dropdown {
     position: absolute;
-    top: 30px;
+    top: 40px;
     right: 0;
-    border: 1px solid #ccc;
-    background-color: white;
-    z-index: 1000;
-    width: 200px;
-    max-height: 300px;
+    background: #fff;
+    width: 300px;
+    max-height: 400px;
     overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 15px;
 }
 
 .notification-dropdown h4 {
-    margin: 0;
-    padding: 10px;
-    background-color: #f4f4f4;
+    margin-bottom: 10px;
+    color: #1e3c72;
 }
 
 .notification-dropdown ul {
@@ -41,9 +63,99 @@
 .notification-dropdown li {
     padding: 10px;
     border-bottom: 1px solid #ddd;
-    cursor: pointer;
 }
 
-.notification-dropdown li:hover {
-    background-color: #f0f0f0;
+.notification-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.notification-dropdown .notification-message {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.notification-dropdown .notification-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-dropdown .mark-read-btn {
+    background: none;
+    border: none;
+    color: #0d6efd;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.8rem;
+}
+
+.notification-dropdown .mark-read-btn:hover {
+    text-decoration: underline;
+}
+
+.dashboard-main {
+    margin-top: 30px;
+}
+
+.gatepasses-section h3 {
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
+
+.gatepasses-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.gatepass-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gatepass-card h5 {
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.gatepass-card p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.gatepass-card.approved {
+    border-left: 5px solid #28a745;
+}
+
+.gatepass-card.pending {
+    border-left: 5px solid #ffc107;
+}
+
+.gatepass-card.rejected {
+    border-left: 5px solid #dc3545;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #1e3c72;
+}
+
+.error {
+    color: #dc3545;
 }

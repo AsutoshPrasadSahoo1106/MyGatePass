@@ -1,0 +1,64 @@
+/* StudentRegister.css */
+
+.register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    padding: 20px;
+}
+
+.register-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 500px;
+}
+
+.register-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1e3c72;
+    font-weight: 700;
+}
+
+.register-form .form-label {
+    font-weight: 500;
+}
+
+.register-form .btn-primary {
+    background-color: #1e3c72;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.register-form .btn-primary:hover {
+    background-color: #16325c;
+}
+
+.register-form a {
+    color: #1e3c72;
+    text-decoration: none;
+}
+
+.register-form a:hover {
+    text-decoration: underline;
+}
+
+.register-form .input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+@media (max-width: 576px) {
+    .register-form {
+        padding: 20px;
+    }
+}

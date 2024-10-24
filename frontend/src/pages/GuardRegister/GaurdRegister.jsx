@@ -1,14 +1,14 @@
-// src/components/WardenRegister.js
+// src/components/GuardRegister.js
 
 import React, { useState } from 'react';
 import axios from 'axios';
-import './WardenRegister.css'; // Import custom CSS
+import './GaurdRegister.css'; // Import custom CSS
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 
-const WardenRegister = () => {
+const GuardRegister = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -17,7 +17,7 @@ const WardenRegister = () => {
         phoneNo: '',
         password: '',
         hostel: '',
-        role: 'warden',
+        role: 'guard',
     });
 
     const [errors, setErrors] = useState({});
@@ -60,10 +60,10 @@ const WardenRegister = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`http://localhost:5000/api/users/register`, formData);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/register`, formData);
             toast.success('Registration successful! Redirecting to login...');
             setTimeout(() => {
-                navigate('/warden/login');
+                navigate('/guard/login');
             }, 3000);
         } catch (error) {
             console.error(error.response?.data || error.message);
@@ -84,7 +84,7 @@ const WardenRegister = () => {
                 <div className="text-center mb-4">
                     <img src={logo} alt="Hostel Gate Pass Management System Logo" className="logo circular-logo" />
                 </div>
-                <h2 className="mb-4 text-center">Warden Registration</h2>
+                <h2 className="mb-4 text-center">Guard Registration</h2>
 
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
@@ -159,7 +159,7 @@ const WardenRegister = () => {
                             onChange={handleChange} 
                             required 
                         />
-                        <button type="button" className="btn btn-outline-secondary" onClick={togglePasswordVisibility}>
+                        <button type="button" className="btn btn-outline-secondary" onClick={togglePasswordVisibility} aria-label={showPassword ? 'Hide password' : 'Show password'}>
                             {showPassword ? 'Hide' : 'Show'}
                         </button>
                         {errors.password && <div className="invalid-feedback d-block">{errors.password}</div>}
@@ -193,7 +193,7 @@ const WardenRegister = () => {
                 </button>
 
                 <p className="mt-3 text-center">
-                    Already have an account? <a href="/warden/login">Login here</a>
+                    Already have an account? <a href="/guard/login">Login here</a>
                 </p>
             </form>
         </div>
@@ -201,4 +201,4 @@ const WardenRegister = () => {
 
 };
 
-export default WardenRegister;
+export default GuardRegister;

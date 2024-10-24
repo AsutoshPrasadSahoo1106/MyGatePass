@@ -1,0 +1,52 @@
+/* src/styles/ModalRejection.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+.modal-content h4 {
+    margin-bottom: 15px;
+    color: #dc3545;
+}
+
+.modal-content .btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.modal-content .btn-danger:hover {
+    background-color: #c82333;
+}
