@@ -1,36 +1,50 @@
-/* src/styles/GuardDashboard.css */
-
-.dashboard-container {
-    padding: 20px;
-    background-color: #f8f9fa;
-    min-height: 100vh;
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-h2 {
+.header-icon {
+    margin-right: 20px;
+    cursor: pointer;
     color: #1e3c72;
 }
 
-h4 {
+.header-icon:hover {
     color: #2a5298;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #e9ecef;
+.header-center {
+    flex-grow: 1;
+    text-align: center;
 }
 
-.btn-success, .btn-danger {
+.header-right {
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
-.btn-success svg, .btn-danger svg {
-    margin-right: 5px;
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
 }
 
-.loading, .error {
-    text-align: center;
-    font-size: 1.2rem;
+.user-name {
+    margin-left: 8px;
     color: #1e3c72;
-    margin-top: 50px;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: #1e3c72;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.logout-button:hover {
+    color: #dc3545; /* Change to your preferred hover color */
 }

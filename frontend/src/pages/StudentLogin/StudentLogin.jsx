@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png'; // Ensure this path is correct based on your project structure
+import Header from '../../components/Header';
 
 const StudentLogin = () => {
     const navigate = useNavigate();
@@ -81,6 +82,7 @@ const StudentLogin = () => {
     };
 
     return (
+        <><Header/>
         <div className="login-container">
             <ToastContainer />
             <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -139,7 +141,7 @@ const StudentLogin = () => {
                     Don't have an account? <a href="/student/signup">Register here</a>
                 </p>
             </form>
-        </div>
+        </div></>
     );
 };
 

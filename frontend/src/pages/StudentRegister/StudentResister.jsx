@@ -3,6 +3,7 @@ import axios from 'axios';
 import './StudentRegister.css'; // Import custom CSS
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
+import Header from '../../components/Header';
 
 const StudentRegister = () => {
     const [formData, setFormData] = useState({
@@ -84,6 +85,8 @@ const StudentRegister = () => {
     };
 
     return (
+        <>
+        <Header></Header>
         <div className="register-container">
             <ToastContainer />
             <form className="register-form" onSubmit={handleSubmit} noValidate>
@@ -291,6 +294,7 @@ const StudentRegister = () => {
                 </p>
             </form>
         </div>
+        </>
     );
 };
 

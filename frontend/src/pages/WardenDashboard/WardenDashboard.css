@@ -1,21 +1,97 @@
-/* src/styles/WardenDashboard.css */
+/* src/components/WardenDashboard.css */
 
 .dashboard-container {
     padding: 20px;
     background-color: #f8f9fa;
     min-height: 100vh;
+    position: relative;
 }
 
-h2 {
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    cursor: pointer;
+    color: #1e3c72;
+    transition: color 0.2s ease-in-out;
+}
+
+.header-icon:hover {
+    color: #16325c;
+}
+
+.header-center h2 {
+    margin: 0;
     color: #1e3c72;
 }
 
-h4 {
-    color: #2a5298;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1e3c72;
+}
+
+.user-icon {
+    color: #1e3c72;
+}
+
+.user-name {
+    font-weight: 500;
+}
+
+.logout-button {
+    background-color: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.logout-button:hover {
+    color: #a71d2a;
+}
+
+.dashboard-main {
+    margin-top: 30px;
+}
+
+.table-responsive {
+    overflow-x: auto;
 }
 
 .table-hover tbody tr:hover {
     background-color: #e9ecef;
+}
+
+.table-primary th {
+    background-color: #1e3c72;
+    color: #fff;
 }
 
 .btn-success, .btn-danger {
@@ -33,4 +109,27 @@ h4 {
     font-size: 1.2rem;
     color: #1e3c72;
     margin-top: 50px;
+}
+
+.error {
+    color: #dc3545;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .header-left, .header-center, .header-right {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .gatepass-card {
+        max-width: 90%;
+    }
 }

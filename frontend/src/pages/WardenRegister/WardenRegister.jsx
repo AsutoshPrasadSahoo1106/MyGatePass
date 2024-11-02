@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
+import Header from '../../components/Header';
 
 const WardenRegister = () => {
     const navigate = useNavigate();
@@ -78,6 +79,8 @@ const WardenRegister = () => {
     };
 
     return (
+        <>
+        <Header/>
         <div className="register-container">
             <ToastContainer />
             <form className="register-form" onSubmit={handleSubmit} noValidate>
@@ -197,6 +200,7 @@ const WardenRegister = () => {
                 </p>
             </form>
         </div>
+        </>
     );
 
 };

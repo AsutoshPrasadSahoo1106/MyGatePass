@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import './GaurdDashboard.css'; // Import custom CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle, faHome, faHistory, faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { toast, ToastContainer } from 'react-toastify';
 import OTPModal from '../../components/OTPModal'; // Import the OTP Modal component
+import { useNavigate } from 'react-router-dom'; // Assuming React Router v6
 
 const GuardDashboard = () => {
     const [approvedGatePasses, setApprovedGatePasses] = useState([]);
@@ -18,6 +19,27 @@ const GuardDashboard = () => {
         action: null, // 'in' or 'out'
     });
     const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+    const [user, setUser] = useState(null); // State to store user data
+    const navigate = useNavigate(); // Hook for navigation
+
+    useEffect(() => {
+        fetchUserData(); // Fetch user data when component mounts
+        fetchApprovedGatePasses();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const fetchUserData = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get(`http://localhost:5000/api/users/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(response.data); // Assuming response contains user data
+        } catch (error) {
+            console.error('Error fetching user data:', error.response?.data || error.message);
+            toast.error(error.response?.data?.message || 'Failed to fetch user data.');
+        }
+    };
 
     // Function to fetch approved gate passes
     const fetchApprovedGatePasses = async () => {
@@ -42,11 +64,6 @@ const GuardDashboard = () => {
             setLoading(false); // End loading
         }
     };
-
-    useEffect(() => {
-        fetchApprovedGatePasses(); // Fetch on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     // Function to handle "In" and "Out" button clicks
     const handleActionClick = async (id, action) => {
@@ -126,9 +143,63 @@ const GuardDashboard = () => {
     if (loading) return <div className="loading">Loading approved gate passes...</div>;
     if (error) return <div className="error">Error: {error}</div>;
 
+    const handleLogout = () => {
+        localStorage.removeItem('token'); // Clear the token from localStorage
+        toast.success('Logged out successfully.');
+        navigate('/guard/login'); // Redirect to the login page
+    };
+
     return (
         <div className="dashboard-container">
             <ToastContainer />
+            {/* Header */}
+            <header className="dashboard-header">
+                <div className="header-left">
+                    <FontAwesomeIcon 
+                        icon={faHome} 
+                        size="lg" 
+                        className="header-icon" 
+                        onClick={() => navigate('/')} 
+                        title="Home" 
+                        aria-label="Home" 
+                    />
+                    <FontAwesomeIcon 
+                        icon={faHistory} 
+                        size="lg" 
+                        className="header-icon" 
+                        onClick={() => navigate('/history')} 
+                        title="History" 
+                        aria-label="History" 
+                    />
+                </div>
+                <div className="header-center">
+                    <h2>Guard Dashboard</h2>
+                </div>
+                <div className="header-right">
+                    {/* User Info */}
+                    {user && (
+                        <div className="user-info">
+                            <FontAwesomeIcon 
+                                icon={faUserCircle} 
+                                size="2x" 
+                                className="user-icon" 
+                                aria-label="User Profile" 
+                            />
+                            <span className="user-name">{user.name}</span>
+                        </div>
+                    )}
+                    {/* Log Out Button */}
+                    <button 
+                        className="logout-button" 
+                        onClick={handleLogout} 
+                        title="Log Out" 
+                        aria-label="Log Out"
+                    >
+                        <FontAwesomeIcon icon={faSignOutAlt} /> Log Out
+                    </button>
+                </div>
+            </header>
+
             <h2 className="mb-4">Guard Dashboard</h2>
             <h4 className="mb-3">Approved Gate Passes</h4>
             {approvedGatePasses.length === 0 ? (
@@ -191,7 +262,6 @@ const GuardDashboard = () => {
             />
         </div>
     );
-
 };
 
 export default GuardDashboard;

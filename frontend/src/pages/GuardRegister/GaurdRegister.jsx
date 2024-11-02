@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
+import Header from '../../components/Header';
 
 const GuardRegister = () => {
     const navigate = useNavigate();
@@ -78,6 +79,8 @@ const GuardRegister = () => {
     };
 
     return (
+        <>
+        <Header></Header>
         <div className="register-container">
             <ToastContainer />
             <form className="register-form" onSubmit={handleSubmit} noValidate>
@@ -197,6 +200,7 @@ const GuardRegister = () => {
                 </p>
             </form>
         </div>
+        </>
     );
 
 };

@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import React Toastify CSS
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
+import Header from '../../components/Header';
 
 const WardenLogin = () => {
     const navigate = useNavigate();
@@ -75,6 +76,8 @@ const WardenLogin = () => {
     };
 
     return (
+        <>
+        <Header></Header>
         <div className="login-container">
             <ToastContainer />
             <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -130,10 +133,11 @@ const WardenLogin = () => {
                 </button>
 
                 <p className="mt-3 text-center">
-                    Don't have an account? <a href="/warden/register">Register here</a>
+                    Don't have an account? <a href="/warden/signup">Register here</a>
                 </p>
             </form>
         </div>
+        </>
     );
 
 };
