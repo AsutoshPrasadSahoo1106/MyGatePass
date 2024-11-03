@@ -67,7 +67,7 @@ const StudentRegister = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/register`, formData);
+            const response = await axios.post(`http://localhost:5000/api/users/register`, formData);
             toast.success('Registration successful! Redirecting to login...');
             setTimeout(() => {
                 window.location.href = '/student/login';

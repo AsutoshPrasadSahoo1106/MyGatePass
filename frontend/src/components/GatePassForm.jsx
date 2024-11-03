@@ -98,7 +98,7 @@ const GatePassForm = ({ onClose, onSuccess }) => {
     return (
         <div className="modal-overlay">
             <ToastContainer />
-            <div className="modal-content">
+            <div className="modal-content" style={{ backgroundColor: 'rgb(211, 211, 211)' }}>
                 <button className="close-button" onClick={onClose}>
                     &times;
                 </button>

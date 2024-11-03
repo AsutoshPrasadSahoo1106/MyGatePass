@@ -22,7 +22,7 @@ const ModalRejection = ({ show, onClose, onSubmit }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content" style={{ backgroundColor: 'rgb(211, 211, 211)' }} onClick={(e) => e.stopPropagation()}>
                 <button className="close-button" onClick={onClose} aria-label="Close modal">
                     <FontAwesomeIcon icon={faTimes} />
                 </button>
