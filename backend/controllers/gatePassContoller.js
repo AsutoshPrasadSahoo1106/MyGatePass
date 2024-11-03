@@ -123,3 +123,20 @@ exports.updateGatePassStatus = async (req, res) => {
     }
 };
 
+exports.getGatePassHistory = async (req, res) => {
+    try {
+        // Fetch all approved gate passes for the user
+        const gatePasses = await GatePass.find({ 
+            user: req.user.id, 
+            status: 'Approved' // Filter by approved status
+        })
+        .select('destination reason status actualInTime actualOutTime createdAt') // Select specific fields to return
+        .populate('user', 'name email') // Populate user details if needed
+        .sort({ createdAt: -1 }); // Sort by created date in descending order
+
+        res.status(200).json(gatePasses);
+    } catch (error) {
+        console.error("Error retrieving gate pass history:", error); // Log the error
+        res.status(500).json({ message: "Error retrieving gate pass history.", error });
+    }
+};

@@ -4,7 +4,8 @@ const {
     getUserGatePasses,
     updateGatePassStatus,
     getPendingGatePassesForWarden,
-    getApprovedGatePassesForGuard
+    getApprovedGatePassesForGuard,
+    getGatePassHistory
 } = require('../controllers/gatePassContoller');
 const { protect } = require('../middleware/authMiddleware.js'); // Middleware for authentication
 
@@ -24,5 +25,7 @@ router.get('/approved', protect, getApprovedGatePassesForGuard); // Get approved
 
 // PATCH /api/gatepasses/:id/status
 router.patch('/:id/status', protect, updateGatePassStatus); // Approve or reject a gate pass
+
+router.get('/history', protect, getGatePassHistory);
 
 module.exports = router;

@@ -1,6 +1,4 @@
-// src/components/StudentDashboard.js
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import {
@@ -26,11 +24,29 @@ const StudentDashboard = () => {
   const [user, setUser] = useState(null); // State to store user data
 
   const navigate = useNavigate(); // Hook for navigation
+  const notificationRef = useRef(null); // Create a ref for the notification dropdown
 
   useEffect(() => {
     fetchUserData(); // Fetch user data when the component mounts
     fetchGatePasses(); // Fetch gate passes when the component mounts
     fetchNotifications(); // Fetch notifications when the component mounts
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close notifications if the click is outside of the notification dropdown
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    // Bind the event listener to the document
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const fetchUserData = async () => {
@@ -167,7 +183,7 @@ const StudentDashboard = () => {
 
       {/* Notification Dropdown */}
       {showNotifications && (
-        <div className="notification-dropdown">
+        <div className="notification-dropdown" ref={notificationRef}>
           <h4>Notifications</h4>
           {notifications.length === 0 ? (
             <p>No notifications.</p>
