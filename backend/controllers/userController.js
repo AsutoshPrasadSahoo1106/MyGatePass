@@ -52,22 +52,41 @@ exports.registerUser = async (req, res) => {
 
 // User login
 exports.loginUser = async (req, res) => {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email:email,role:role });
-        if (!user) return res.status(400).json({ message: "Invalid credentials." });
+        // Find the user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid credentials." });
+        }
 
+        // Compare password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid credentials." });
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials." });
+        }
 
-        const token = generateToken(user._id); // Generate token using the utility function
-        
-        res.status(200).json({ message: "Login successful.", token, user });
+        // Generate JWT token
+        const token = generateToken(user._id); // Assuming you have a function to generate token
+
+        // Return success response with token and user information
+        res.status(200).json({
+            message: "Login successful.",
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                username: user.username,
+                role: user.role, // Include user role
+            },
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error logging in.", error });
+        console.error("Login error:", error); // Log the error for debugging
+        res.status(500).json({ message: "Error logging in.", error: error.message });
     }
 };
+
 
 // Get user details
 exports.getUser = async (req, res) => {

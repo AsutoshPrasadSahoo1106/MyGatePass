@@ -22,6 +22,8 @@ const StudentDashboard = () => {
   const [notifications, setNotifications] = useState([]); // State for notifications
   const [showNotifications, setShowNotifications] = useState(false); // State to toggle notification dropdown
   const [user, setUser] = useState(null); // State to store user data
+  const [showHistory, setShowHistory] = useState(false); // State to toggle history view
+
 
   const navigate = useNavigate(); // Hook for navigation
   const notificationRef = useRef(null); // Create a ref for the notification dropdown
@@ -85,6 +87,8 @@ const StudentDashboard = () => {
       setLoading(false); // End loading
     }
   };
+
+
 
   const fetchNotifications = async () => {
     const token = localStorage.getItem("token");

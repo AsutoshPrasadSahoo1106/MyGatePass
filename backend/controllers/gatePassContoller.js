@@ -30,15 +30,26 @@ exports.createGatePass = async (req, res) => {
 // Get all gate passes for a specific user
 exports.getUserGatePasses = async (req, res) => {
     try {
-        const gatePasses = await GatePass.find({ user: req.user.id })
-            .populate('user', 'name email')
-            .sort({ createdAt: -1 });
-        res.status(200).json(gatePasses);
+        const gatePasses = await GatePass.find({
+            user: req.user.id,
+            status: { $ne: 'Rejected' }, // Exclude gate passes with status 'Rejected'
+            $or: [
+                { status: 'Pending' }, // Include pending gate passes
+                { actualOutTime: { $exists: false } }, // Include gate passes without actualOutTime
+                { actualInTime: { $exists: false } }   // Include gate passes without actualInTime
+            ]
+        })
+        .populate('user', 'name email') // Populate user details if needed
+        .sort({ createdAt: -1 }); // Sort by creation date in descending order
+
+        res.status(200).json(gatePasses); // Respond with the found gate passes
     } catch (error) {
-        console.error("Error retrieving gate passes:", error); // Log the error
-        res.status(500).json({ message: "Error retrieving gate passes." });
+        console.error("Error retrieving gate passes:", error); // Log the error for debugging
+        res.status(500).json({ message: "Error retrieving gate passes." }); // Handle error response
     }
 };
+
+
 
 // Get all pending gate passes for the warden based on hostel
 exports.getPendingGatePassesForWarden = async (req, res) => {
@@ -125,14 +136,57 @@ exports.updateGatePassStatus = async (req, res) => {
 
 exports.getGatePassHistory = async (req, res) => {
     try {
-        // Fetch all approved gate passes for the user
-        const gatePasses = await GatePass.find({ 
-            user: req.user.id, 
-            status: 'Approved' // Filter by approved status
-        })
-        .select('destination reason status actualInTime actualOutTime createdAt') // Select specific fields to return
-        .populate('user', 'name email') // Populate user details if needed
-        .sort({ createdAt: -1 }); // Sort by created date in descending order
+        let gatePasses;
+
+        // Determine user role
+        const userRole = req.user.role; // Assuming the role is stored in the user object
+
+        // Fetch gate passes based on user role
+        if (userRole === 'warden') {
+            gatePasses = await GatePass.find({ 
+                approvedBy: req.user.id, // Check by approvedBy for warden
+                status: { $in: ['Approved', 'Rejected'] } // Only include approved or rejected statuses
+            })
+            .select('destination reason status actualInTime actualOutTime date') // Select specific fields to return
+            .populate('user', 'name email uid') // Populate user details if needed
+            .sort({ createdAt: -1 });
+        } else if (userRole === 'guard') {
+            gatePasses = await GatePass.find({ 
+                $or: [
+                    { 
+                        sentOutBy: req.user.id, // Check by sentOutBy for guard
+                        actualInTime: { $exists: true, $ne: null },
+                        actualOutTime: { $exists: true, $ne: null }
+                    },
+                    { 
+                        giveEntryBy: req.user.id, // Alternatively check giveEntryBy
+                        actualInTime: { $exists: true, $ne: null },
+                        actualOutTime: { $exists: true, $ne: null }
+                    }
+                    
+                ]
+            })
+            .select('destination reason status actualInTime actualOutTime date') // Select specific fields to return
+            .populate('user', 'name email uid')
+            .sort({ createdAt: -1 });
+        } else {
+            // Default behavior for students
+            gatePasses = await GatePass.find({ 
+                user: req.user.id,
+                $or: [
+                    { 
+                        actualInTime: { $exists: true, $ne: null },
+                        actualOutTime: { $exists: true, $ne: null }
+                    },
+                    { 
+                        status: 'Rejected' // Include rejected statuses
+                    }
+                ]
+            })
+            .select('destination reason status actualInTime actualOutTime date')
+            .populate('user', 'name email uid')
+            .sort({ createdAt: -1 });
+        }
 
         res.status(200).json(gatePasses);
     } catch (error) {
@@ -140,3 +194,6 @@ exports.getGatePassHistory = async (req, res) => {
         res.status(500).json({ message: "Error retrieving gate pass history.", error });
     }
 };
+
+
+

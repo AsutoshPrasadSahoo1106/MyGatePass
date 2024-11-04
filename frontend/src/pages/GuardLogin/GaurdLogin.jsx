@@ -13,8 +13,7 @@ const GuardLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: '',
-        role: 'guard'
+        password: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -57,11 +56,12 @@ const GuardLogin = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials);
+            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials); // Updated API endpoint
             localStorage.setItem('token', response.data.token); // Store token securely
+            localStorage.setItem('userRole', response.data.user.role); // Store user role in local storage
             toast.success('Login successful! Redirecting to dashboard...');
             setTimeout(() => {
-                navigate('/guard/dashboard');
+                navigate('/guard/dashboard'); // Redirect to guard dashboard
             }, 3000);
         } catch (error) {
             console.error(error.response?.data || error.message);
@@ -77,7 +77,7 @@ const GuardLogin = () => {
 
     return (
         <>
-        <Header></Header>
+        <Header />
         <div className="login-container">
             <ToastContainer />
             <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -139,7 +139,6 @@ const GuardLogin = () => {
         </div>
         </>
     );
-
 };
 
 export default GuardLogin;

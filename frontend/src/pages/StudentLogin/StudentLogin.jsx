@@ -1,3 +1,5 @@
+// src/components/StudentLogin.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './StudentLogin.css'; // Import custom CSS
@@ -11,8 +13,7 @@ const StudentLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: '',
-        role: 'student'
+        password: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -63,11 +64,12 @@ const StudentLogin = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials);
+            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials); // Updated API endpoint
             localStorage.setItem('token', response.data.token); // Store token securely
+            localStorage.setItem('userRole', response.data.user.role); // Store user role in local storage
             toast.success('Login successful! Redirecting to dashboard...');
             setTimeout(() => {
-                navigate('/student/dashboard');
+                navigate('/student/dashboard'); // Redirect to student dashboard
             }, 3000);
         } catch (error) {
             console.error(error.response.data);
@@ -82,7 +84,8 @@ const StudentLogin = () => {
     };
 
     return (
-        <><Header/>
+        <>
+        <Header />
         <div className="login-container">
             <ToastContainer />
             <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -141,7 +144,8 @@ const StudentLogin = () => {
                     Don't have an account? <a href="/student/signup">Register here</a>
                 </p>
             </form>
-        </div></>
+        </div>
+        </>
     );
 };
 

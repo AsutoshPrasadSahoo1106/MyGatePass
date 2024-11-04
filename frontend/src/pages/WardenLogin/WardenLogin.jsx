@@ -13,8 +13,7 @@ const WardenLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: '',
-        role: 'warden'
+        password: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -44,7 +43,6 @@ const WardenLogin = () => {
         }
 
         setErrors(tempErrors);
-
         return Object.keys(tempErrors).length === 0;
     };
 
@@ -57,8 +55,9 @@ const WardenLogin = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials);
+            const response = await axios.post(`http://localhost:5000/api/users/login`, credentials); // Updated API endpoint
             localStorage.setItem('token', response.data.token); // Store token securely
+            localStorage.setItem('userRole', response.data.user.role); // Store user role in local storage
             toast.success('Login successful! Redirecting to dashboard...');
             setTimeout(() => {
                 navigate('/warden/dashboard');
@@ -77,7 +76,7 @@ const WardenLogin = () => {
 
     return (
         <>
-        <Header></Header>
+        <Header />
         <div className="login-container">
             <ToastContainer />
             <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -139,7 +138,6 @@ const WardenLogin = () => {
         </div>
         </>
     );
-
 };
 
 export default WardenLogin;

@@ -66,7 +66,7 @@ const GuardRegister = () => {
     setIsSubmitting(true);
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/users/register`,
+        `http://localhost:5000/api/users/register`,
         formData
       );
       toast.success("Registration successful! Redirecting to login...");

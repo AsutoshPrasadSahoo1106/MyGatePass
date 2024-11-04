@@ -12,6 +12,7 @@ import GuardRegister from './pages/GuardRegister/GaurdRegister';
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
 import WardenDashboard from './pages/WardenDashboard/WardenDashboard';
 import GuardDashboard from './pages/GaurdDashboard/GaurdDashboard';
+import History from './pages/History/History';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
             <Routes>
                 {/* Home Page */}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/History" element={<History />}/>
                 
                 {/* Student Routes */}
                 <Route path="/student/login" element={<StudentLogin />} />

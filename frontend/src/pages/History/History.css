@@ -1,0 +1,124 @@
+.dashboard-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    position: relative;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    cursor: pointer;
+    color: #1e3c72;
+    transition: color 0.2s ease-in-out;
+}
+
+.header-icon:hover {
+    color: #16325c;
+}
+
+.header-center {
+    margin: 0;
+    color: #1e3c72;
+    font-size: 1.5rem; /* Adjust font size for the title */
+    font-weight: 600; /* Make the title bold */
+}
+
+.dashboard-main {
+    margin-top: 30px;
+}
+
+.gatepasses-section h3 {
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
+
+.gatepasses-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.gatepass-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.gatepass-card:hover {
+    transform: translateY(-5px);
+}
+
+.gatepass-card.approved {
+    border-left: 5px solid #28a745; /* Green for approved passes */
+    background-color: #e9f8e9; /* Light green background */
+}
+
+.gatepass-card.rejected {
+    border-left: 5px solid #dc3545; /* Red for rejected passes */
+    background-color: #f8d7da; /* Light red background */
+}
+
+.gatepass-card h5 {
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.gatepass-card p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #1e3c72;
+}
+
+.error {
+    color: #dc3545;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .header-left, .header-center {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .gatepasses-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .gatepass-card {
+        max-width: 90%;
+    }
+}
