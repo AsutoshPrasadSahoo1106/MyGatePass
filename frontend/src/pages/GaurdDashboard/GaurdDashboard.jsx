@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./GaurdDashboard.css"; // Import custom CSS
+import "./GaurdDashboard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
@@ -11,12 +11,15 @@ import {
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast, ToastContainer } from "react-toastify";
-import OTPModal from "../../components/OTPModal"; // Import the OTP Modal component
-import { useNavigate } from "react-router-dom"; // Assuming React Router v6
+import OTPModal from "../../components/OTPModal";
+import { useNavigate } from "react-router-dom";
+import _ from "lodash";
+
+const POLLING_INTERVAL = 10000; // Poll every 60 seconds
 
 const GuardDashboard = () => {
   const [approvedGatePasses, setApprovedGatePasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true); // Initial loading only
   const [error, setError] = useState(null);
   const [modalData, setModalData] = useState({
     show: false,
@@ -24,14 +27,19 @@ const GuardDashboard = () => {
     action: null, // 'in' or 'out'
   });
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [user, setUser] = useState(null); // State to store user data
-  const [outClicked, setOutClicked] = useState({}); // Track 'Out' button clicks
-  const navigate = useNavigate(); // Hook for navigation
+  const [user, setUser] = useState(null);
+  const [outClicked, setOutClicked] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData(); // Fetch user data when component mounts
-    fetchApprovedGatePasses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchUserData();
+    fetchApprovedGatePasses(true); // Initial load
+
+    // Set up polling for approved gate passes
+    const intervalId = setInterval(() => fetchApprovedGatePasses(false), POLLING_INTERVAL);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchUserData = async () => {
@@ -40,76 +48,65 @@ const GuardDashboard = () => {
       const response = await axios.get(`http://localhost:5000/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUser(response.data); // Assuming response contains user data
+      setUser(response.data);
     } catch (error) {
-      console.error(
-        "Error fetching user data:",
-        error.response?.data || error.message
-      );
-      toast.error(
-        error.response?.data?.message || "Failed to fetch user data."
-      );
+      console.error("Error fetching user data:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to fetch user data.");
     }
   };
 
-  // Function to fetch approved gate passes
-  const fetchApprovedGatePasses = async () => {
+  const fetchApprovedGatePasses = async (isInitialLoad = false) => {
+    // Set initial loading only for the first load
+    if (isInitialLoad) {
+      setInitialLoading(true);
+    }
+
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
         `http://localhost:5000/api/gatepasses/approved`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setApprovedGatePasses(response.data);
+
+      const newGatePasses = response.data;
+
+      // Only update the approvedGatePasses state if there are changes
+      if (!_.isEqual(newGatePasses, approvedGatePasses)) {
+        setApprovedGatePasses(newGatePasses);
+      }
+
       setError(null);
     } catch (error) {
-      console.error(
-        "Error fetching approved gate passes:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error fetching approved gate passes:", error.response?.data || error.message);
       setError("Failed to fetch approved gate passes.");
       toast.error("Failed to fetch approved gate passes.");
     } finally {
-      setLoading(false); // End loading
+      if (isInitialLoad) {
+        setInitialLoading(false); // Stop loading for initial fetch
+      }
     }
   };
 
-  // Function to handle "In" and "Out" button clicks
   const handleActionClick = async (id, action) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:5000/api/otp/generate`,
-        {
-          gatePassId: id, // Send the gate pass ID for which OTP is generated
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { gatePassId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("OTP sent successfully!");
-      setModalData({
-        show: true,
-        gatePassId: id,
-        action: action, // 'in' or 'out'
-      });
+      setModalData({ show: true, gatePassId: id, action });
 
-      // Update state to enable "In" button for this gate pass if "Out" was clicked
       if (action === "out") {
         setOutClicked((prev) => ({ ...prev, [id]: true }));
       }
     } catch (error) {
-      console.error(
-        "Error generating OTP:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error generating OTP:", error.response?.data || error.message);
       toast.error("Failed to send OTP.");
     }
   };
 
-  // Function to handle OTP verification
   const handleVerifyOTP = async (otp) => {
     if (!modalData.gatePassId || !modalData.action) {
       toast.error("Invalid gate pass or action.");
@@ -117,57 +114,41 @@ const GuardDashboard = () => {
       return;
     }
 
-    setIsVerifyingOtp(true); // Start loading for OTP verification
+    setIsVerifyingOtp(true);
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
         `http://localhost:5000/api/otp/verify`,
-        {
-          otp,
-          gatePassId: modalData.gatePassId, // Send the gate pass ID for verification
-          action: modalData.action, // 'in' or 'out' based on the button clicked
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { otp, gatePassId: modalData.gatePassId, action: modalData.action },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success(response.data.message || "OTP verified successfully!");
-      fetchApprovedGatePasses(); // Refresh the list
+      fetchApprovedGatePasses(); // Refresh gate passes after verification
       handleCloseModal();
     } catch (error) {
-      console.error(
-        "Error verifying OTP:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error verifying OTP:", error.response?.data || error.message);
       toast.error(error.response?.data?.message || "Failed to verify OTP.");
     } finally {
-      setIsVerifyingOtp(false); // End loading for OTP verification
+      setIsVerifyingOtp(false);
     }
   };
 
-  // Function to close the OTP modal
   const handleCloseModal = () => {
-    setModalData({
-      show: false,
-      gatePassId: null,
-      action: null,
-    });
+    setModalData({ show: false, gatePassId: null, action: null });
   };
 
-  if (loading)
-    return <div className="loading">Loading approved gate passes...</div>;
+  if (initialLoading) return <div className="loading">Loading approved gate passes...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear the token from localStorage
+    localStorage.removeItem("token");
     toast.success("Logged out successfully.");
-    navigate("/guard/login"); // Redirect to the login page
+    navigate("/guard/login");
   };
 
   return (
     <div className="dashboard-container">
       <ToastContainer />
-      {/* Header */}
       <header className="dashboard-header">
         <div className="header-left">
           <FontAwesomeIcon
@@ -191,7 +172,6 @@ const GuardDashboard = () => {
           <h2>Guard Dashboard</h2>
         </div>
         <div className="header-right">
-          {/* User Info */}
           {user && (
             <div className="user-info">
               <FontAwesomeIcon
@@ -203,7 +183,6 @@ const GuardDashboard = () => {
               <span className="user-name">{user.name}</span>
             </div>
           )}
-          {/* Log Out Button */}
           <button
             className="logout-button"
             onClick={handleLogout}
@@ -263,17 +242,17 @@ const GuardDashboard = () => {
                       className="btn btn-danger btn-sm me-2"
                       onClick={() => handleActionClick(pass._id, "out")}
                       aria-label={`Verify exit for pass ${index + 1}`}
-                      disabled={pass.actualOutTime || outClicked[pass._id]} // Disable if actualOutTime exists
+                      disabled={pass.actualOutTime || outClicked[pass._id]}
                     >
-                     Out
+                      Out
                     </button>
                     <button
                       className="btn btn-success btn-sm"
                       onClick={() => handleActionClick(pass._id, "in")}
                       aria-label={`Verify entry for pass ${index + 1}`}
-                      disabled={!pass.actualOutTime && !outClicked[pass._id]} // Enable only if actualOutTime exists or outClicked is true
+                      disabled={!pass.actualOutTime && !outClicked[pass._id]}
                     >
-                       &nbsp; In &nbsp;
+                      In
                     </button>
                   </td>
                 </tr>
@@ -283,7 +262,6 @@ const GuardDashboard = () => {
         </div>
       )}
 
-      {/* OTP Modal */}
       <OTPModal
         show={modalData.show}
         onClose={handleCloseModal}

@@ -1,48 +1,54 @@
-// src/components/WardenDashboard.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import { gatePassesState } from '../../state/atoms';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faHome, faHistory, faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import './WardenDashboard.css'; // Import custom CSS
+import './WardenDashboard.css';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
-import { useNavigate } from 'react-router-dom'; // Assuming React Router v6
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 import ModalRejection from '../../components/ModalRejection';
+import _ from 'lodash';
+
+const POLLING_INTERVAL = 10000;
 
 const WardenDashboard = () => {
     const [requests, setRequests] = useRecoilState(gatePassesState);
-    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true); // Initial loading state only
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [currentRequestId, setCurrentRequestId] = useState(null);
-    const [user, setUser] = useState(null); // State to store user data
+    const [user, setUser] = useState(null);
 
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchUserData(); // Fetch user data when component mounts
-        fetchRequests();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchUserData();
+        fetchInitialRequests();
+
+        // Polling for gate pass requests
+        const intervalId = setInterval(fetchRequestsOnPoll, POLLING_INTERVAL);
+
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
     }, []);
 
     const fetchUserData = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.get(`http://localhost:5000/api/users/me`, { // Adjust endpoint as per backend
+            const response = await axios.get(`http://localhost:5000/api/users/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setUser(response.data); // Assuming response contains user data
+            setUser(response.data);
         } catch (error) {
             console.error('Error fetching user data:', error.response?.data || error.message);
             toast.error(error.response?.data?.message || 'Failed to fetch user data.');
         }
     };
 
-    const fetchRequests = async () => {
-        setLoading(true);
+    const fetchInitialRequests = async () => {
+        setInitialLoading(true);
         const token = localStorage.getItem('token');
         try {
             const response = await axios.get(`http://localhost:5000/api/gatepasses/pending`, {
@@ -55,7 +61,25 @@ const WardenDashboard = () => {
             setError(error.response?.data?.message || 'Failed to fetch gate passes.');
             toast.error(error.response?.data?.message || 'Failed to fetch gate passes.');
         } finally {
-            setLoading(false);
+            setInitialLoading(false);
+        }
+    };
+
+    const fetchRequestsOnPoll = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get(`http://localhost:5000/api/gatepasses/pending`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const newRequests = response.data;
+
+            // Only update the requests state if there are changes
+            if (!_.isEqual(newRequests, requests)) {
+                setRequests(newRequests);
+            }
+        } catch (error) {
+            console.error('Polling error:', error.response?.data || error.message);
         }
     };
 
@@ -105,29 +129,26 @@ const WardenDashboard = () => {
     };
 
     const handleLogout = () => {
-        // Clear the token from localStorage
         localStorage.removeItem('token');
         toast.success('Logged out successfully.');
-        navigate('/warden/login'); // Redirect to the login page
+        navigate('/warden/login');
     };
 
     const navigateHome = () => {
-        navigate('/'); // Adjust the route as per your routing setup
+        navigate('/');
     };
 
     const navigateHistory = () => {
-        navigate('/history'); // Adjust the route as per your routing setup
+        navigate('/history');
     };
 
-    if (loading) return <div className="loading">Loading pending gate pass requests...</div>;
+    if (initialLoading) return <div className="loading">Loading pending gate pass requests...</div>;
     if (error) return <div className="error">Error: {error}</div>;
 
     return (
         <div className="dashboard-container">
-            {/* ToastContainer for displaying toast notifications */}
             <ToastContainer />
 
-            {/* Header */}
             <header className="dashboard-header">
                 <div className="header-left">
                     <FontAwesomeIcon 
@@ -151,7 +172,6 @@ const WardenDashboard = () => {
                     <h2>Warden Dashboard</h2>
                 </div>
                 <div className="header-right">
-                    {/* User Info */}
                     {user && (
                         <div className="user-info">
                             <FontAwesomeIcon 
@@ -163,7 +183,6 @@ const WardenDashboard = () => {
                             <span className="user-name">{user.name}</span>
                         </div>
                     )}
-                    {/* Log Out Button */}
                     <button 
                         className="logout-button" 
                         onClick={handleLogout} 
@@ -227,14 +246,8 @@ const WardenDashboard = () => {
                         </table>
                     </div>
                 )}
-
-                {/* Button to Apply for New Gate Pass (if applicable) */}
-                {/* <button className="btn btn-success mt-4" onClick={toggleForm}>
-                    Apply for New Gate Pass
-                </button> */}
             </main>
 
-            {/* Modal for Rejection Reason */}
             {showModal && (
                 <ModalRejection 
                     show={showModal} 
@@ -244,7 +257,6 @@ const WardenDashboard = () => {
             )}
         </div>
     );
-
 };
 
 export default WardenDashboard;

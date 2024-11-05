@@ -13,7 +13,8 @@ const StudentLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: ''
+        password: '',
+        role: 'student'
     });
 
     const [errors, setErrors] = useState({});

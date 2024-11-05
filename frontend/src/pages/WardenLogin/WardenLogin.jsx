@@ -13,7 +13,8 @@ const WardenLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: ''
+        password: '',
+        role: 'warden'
     });
 
     const [errors, setErrors] = useState({});

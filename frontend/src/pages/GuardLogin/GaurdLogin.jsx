@@ -13,7 +13,8 @@ const GuardLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: '',
-        password: ''
+        password: '',
+        role: 'guard'
     });
 
     const [errors, setErrors] = useState({});

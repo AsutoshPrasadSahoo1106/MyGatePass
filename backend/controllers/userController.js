@@ -52,7 +52,7 @@ exports.registerUser = async (req, res) => {
 
 // User login
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body; // Include role in the request body
 
     try {
         // Find the user by email
@@ -65,6 +65,11 @@ exports.loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials." });
+        }
+
+        // Check if the provided role matches the user's role
+        if (user.role !== role) {
+            return res.status(403).json({ message: "Role mismatch. Access denied." });
         }
 
         // Generate JWT token
@@ -86,6 +91,7 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: "Error logging in.", error: error.message });
     }
 };
+
 
 
 // Get user details

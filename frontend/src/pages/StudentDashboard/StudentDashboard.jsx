@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import {
@@ -6,216 +6,131 @@ import {
   gatePassesLoadingState,
   gatePassesErrorState,
 } from "../../state/atoms";
-import GatePassForm from "../../components/GatePassForm"; // Updated import path
+import GatePassForm from "../../components/GatePassForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faUserCircle, faHome, faHistory, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-import './StudentDashboard.css'; // Import custom CSS
-import { ToastContainer, toast } from 'react-toastify'; // Correctly import ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Ensure CSS is imported
-import { useNavigate } from "react-router-dom"; // Assuming React Router v6
+import './StudentDashboard.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
+import Notifications from "../../components/Notification";
+import _ from "lodash"; // Import lodash for deep comparison
+
+const POLLING_INTERVAL = 10000; // Poll every 10 seconds
 
 const StudentDashboard = () => {
   const [gatePasses, setGatePasses] = useRecoilState(gatePassesState);
-  const [loading, setLoading] = useRecoilState(gatePassesLoadingState);
+  const [initialLoading, setInitialLoading] = useState(true); // Use initial loading only
   const [error, setError] = useRecoilState(gatePassesErrorState);
-  const [showForm, setShowForm] = useState(false); // State to control the form visibility
-  const [notifications, setNotifications] = useState([]); // State for notifications
-  const [showNotifications, setShowNotifications] = useState(false); // State to toggle notification dropdown
-  const [user, setUser] = useState(null); // State to store user data
-  const [showHistory, setShowHistory] = useState(false); // State to toggle history view
+  const [showForm, setShowForm] = useState(false);
+  const [user, setUser] = useState(null);
 
-
-  const navigate = useNavigate(); // Hook for navigation
-  const notificationRef = useRef(null); // Create a ref for the notification dropdown
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData(); // Fetch user data when the component mounts
-    fetchGatePasses(); // Fetch gate passes when the component mounts
-    fetchNotifications(); // Fetch notifications when the component mounts
-  }, []);
+    // Initial fetch
+    fetchUserData();
+    fetchGatePasses(true); // Initial load
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Close notifications if the click is outside of the notification dropdown
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false);
-      }
-    };
+    // Set up polling for gate passes
+    const gatePassesInterval = setInterval(fetchGatePasses, POLLING_INTERVAL);
 
-    // Bind the event listener to the document
-    document.addEventListener("mousedown", handleClickOutside);
-    
-    // Cleanup the event listener on unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    // Clean up the interval on component unmount
+    return () => clearInterval(gatePassesInterval);
   }, []);
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/users/me`, // Adjust the endpoint as per your backend
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `http://localhost:5000/api/users/me`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setUser(response.data); // Assuming the response contains user data
+      setUser(response.data);
     } catch (error) {
       console.error(error.response ? error.response.data : error.message);
       toast.error("Failed to fetch user data.");
     }
   };
 
-  const fetchGatePasses = async () => {
-    setLoading(true); // Start loading
+  const fetchGatePasses = async (isInitialLoad = false) => {
+    // Set initial loading only for the first load
+    if (isInitialLoad) {
+      setInitialLoading(true);
+    }
+
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
         `http://localhost:5000/api/gatepasses/user`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setGatePasses(response.data);
-      setError(null); // Clear any previous errors
+
+      const newGatePasses = response.data;
+
+      // Only update the gatePasses state if there are changes
+      if (!_.isEqual(newGatePasses, gatePasses)) {
+        setGatePasses(newGatePasses);
+      }
+
+      setError(null);
     } catch (error) {
       console.error(error.response ? error.response.data : error.message);
       setError(error.response?.data?.message || "Failed to fetch gate passes.");
       toast.error(error.response?.data?.message || "Failed to fetch gate passes.");
     } finally {
-      setLoading(false); // End loading
-    }
-  };
-
-
-
-  const fetchNotifications = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/notifications/user`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setNotifications(response.data);
-    } catch (error) {
-      console.error(error.response ? error.response.data : error.message);
-      toast.error("Failed to fetch notifications.");
-    }
-  };
-
-  const markAsRead = async (notificationId) => {
-    const token = localStorage.getItem("token");
-    try {
-      await axios.patch(
-        `http://localhost:5000/api/notifications/${notificationId}/read`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      toast.success("Notification marked as read.");
-
-      // Fetch updated notifications after marking as read
-      fetchNotifications(); // Call fetchNotifications to refresh the notifications list
-    } catch (error) {
-      console.error("Error marking notification as read:", error.response ? error.response.data : error.message);
-      toast.error("Failed to mark notification as read.");
+      if (isInitialLoad) {
+        setInitialLoading(false); // Stop loading for initial fetch
+      }
     }
   };
 
   const toggleForm = () => {
-    setShowForm(!showForm); // Toggle form visibility
+    setShowForm(!showForm);
   };
 
   const handleFormSuccess = () => {
-    fetchGatePasses(); // Refetch gate passes after successfully applying for a new gate pass
+    fetchGatePasses(true); // Refetch on form success, showing loading indicator
   };
 
   const handleLogout = () => {
-    // Clear the token from localStorage
     localStorage.removeItem("token");
     toast.success("Logged out successfully.");
-    navigate("/student/login"); // Redirect to the login page
+    navigate("/student/login");
   };
 
-  if (loading) return <div className="loading">Loading gate passes...</div>;
+  // Memoize the header to prevent re-renders when gatePasses update
+  const header = useMemo(() => (
+    <header className="dashboard-header">
+      <div className="header-left">
+        <FontAwesomeIcon icon={faHome} size="lg" className="header-icon" onClick={() => navigate("/")} title="Home" aria-label="Home" />
+        <FontAwesomeIcon icon={faHistory} size="lg" className="header-icon" onClick={() => navigate("/history")} title="History" aria-label="History" />
+      </div>
+      <div className="header-center">
+        <h2>Student Dashboard</h2>
+      </div>
+      <div className="header-right">
+        {user && (
+          <div className="user-info">
+            <FontAwesomeIcon icon={faUserCircle} size="2x" className="user-icon" aria-label="User Profile" />
+            <span className="user-name">{user.name}</span>
+          </div>
+        )}
+        <Notifications />
+        <button className="logout-button" onClick={handleLogout} title="Log Out" aria-label="Log Out">
+          <FontAwesomeIcon icon={faSignOutAlt} /> Log Out
+        </button>
+      </div>
+    </header>
+  ), [user, navigate]); // Dependencies for re-rendering the header only if user or navigate changes
+
+  if (initialLoading) return <div className="loading">Loading gate passes...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="dashboard-container">
-      {/* ToastContainer for displaying toast notifications */}
       <ToastContainer />
-      
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-left">
-          <FontAwesomeIcon icon={faHome} size="lg" className="header-icon" onClick={() => navigate("/")} title="Home" aria-label="Home" />
-          <FontAwesomeIcon icon={faHistory} size="lg" className="header-icon" onClick={() => navigate("/history")} title="History" aria-label="History" />
-        </div>
-        <div className="header-center">
-          <h2>Student Dashboard</h2>
-        </div>
-        <div className="header-right">
-          {/* User Info */}
-          {user && (
-            <div className="user-info">
-              <FontAwesomeIcon icon={faUserCircle} size="2x" className="user-icon" aria-label="User Profile" />
-              <span className="user-name">{user.name}</span>
-            </div>
-          )}
-          {/* Notification Icon */}
-          <div
-            className="notification-icon"
-            onClick={() => setShowNotifications(!showNotifications)}
-            title="Notifications"
-            aria-label="Notifications"
-          >
-            <FontAwesomeIcon icon={faBell} size="lg" />
-            {notifications.length > 0 && (
-              <span className="notification-count">{notifications.length}</span>
-            )}
-          </div>
-          {/* Log Out Button */}
-          <button className="logout-button" onClick={handleLogout} title="Log Out" aria-label="Log Out">
-            <FontAwesomeIcon icon={faSignOutAlt} /> Log Out
-          </button>
-        </div>
-      </header>
-
-      {/* Notification Dropdown */}
-      {showNotifications && (
-        <div className="notification-dropdown" ref={notificationRef}>
-          <h4>Notifications</h4>
-          {notifications.length === 0 ? (
-            <p>No notifications.</p>
-          ) : (
-            <ul>
-              {notifications.map((notification) => (
-                <li key={notification._id} className={notification.isRead ? 'read' : 'unread'}>
-                  <div className="notification-message">
-                    {notification.message}
-                  </div>
-                  <div className="notification-meta">
-                    {new Date(notification.createdAt).toLocaleString()}
-                    {!notification.isRead && (
-                      <button 
-                        className="btn btn-sm btn-link mark-read-btn"
-                        onClick={() => markAsRead(notification._id)}
-                      >
-                        Mark as Read
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-
+      {header} {/* Render the memoized header */}
       <main className="dashboard-main">
         <section className="gatepasses-section">
           <h3>Your Gate Passes</h3>
@@ -242,7 +157,6 @@ const StudentDashboard = () => {
         </section>
       </main>
 
-      {/* Render the GatePassForm component as a modal if showForm is true */}
       {showForm && (
         <GatePassForm onClose={toggleForm} onSuccess={handleFormSuccess} />
       )}
