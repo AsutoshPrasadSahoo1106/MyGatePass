@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import { gatePassesState } from '../../state/atoms';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faHome, faHistory, faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faCheckCircle, 
+    faTimesCircle, 
+    faHome, 
+    faHistory, 
+    faUserCircle, 
+    faSignOutAlt,
+    faSearch // Import search icon
+} from '@fortawesome/free-solid-svg-icons';
 import './WardenDashboard.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +28,7 @@ const WardenDashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [currentRequestId, setCurrentRequestId] = useState(null);
     const [user, setUser] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(""); // State for search term
 
     const navigate = useNavigate();
 
@@ -142,6 +151,39 @@ const WardenDashboard = () => {
         navigate('/history');
     };
 
+    // Handle search input change
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Filtered requests based on search term
+    const filteredRequests = useMemo(() => {
+        if (!searchTerm) return requests;
+
+        const lowercasedTerm = searchTerm.toLowerCase();
+        return requests.filter((request) => {
+            const userName = request.user?.name?.toLowerCase() || "";
+            const uid = request.user?.uid?.toLowerCase() || "";
+            const roomNo = request.user?.roomNo?.toLowerCase() || "";
+            const destination = request.destination?.toLowerCase() || "";
+            const reason = request.reason?.toLowerCase() || "";
+            const date = new Date(request.date).toLocaleDateString().toLowerCase();
+            const outTime = request.outTime ? new Date(request.outTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toLowerCase() : "";
+            const returnTime = request.returnTime ? new Date(request.returnTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toLowerCase() : "";
+
+            return (
+                userName.includes(lowercasedTerm) ||
+                uid.includes(lowercasedTerm) ||
+                roomNo.includes(lowercasedTerm) ||
+                destination.includes(lowercasedTerm) ||
+                reason.includes(lowercasedTerm) ||
+                date.includes(lowercasedTerm) ||
+                outTime.includes(lowercasedTerm) ||
+                returnTime.includes(lowercasedTerm)
+            );
+        });
+    }, [searchTerm, requests]);
+
     if (initialLoading) return <div className="loading">Loading pending gate pass requests...</div>;
     if (error) return <div className="error">Error: {error}</div>;
 
@@ -172,6 +214,16 @@ const WardenDashboard = () => {
                     <h2>Warden Dashboard</h2>
                 </div>
                 <div className="header-right">
+                    <div className="search-bar">
+                        <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder="Search requests..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            aria-label="Search gate pass requests"
+                        />
+                    </div>
                     {user && (
                         <div className="user-info">
                             <FontAwesomeIcon 
@@ -197,7 +249,7 @@ const WardenDashboard = () => {
             <main className="dashboard-main">
                 <h2 className="mb-4">Warden Dashboard</h2>
                 <h4 className="mb-3">Pending Gate Pass Requests</h4>
-                {requests.length === 0 ? (
+                {filteredRequests.length === 0 ? (
                     <p>No pending requests found.</p>
                 ) : (
                     <div className="table-responsive">
@@ -217,7 +269,7 @@ const WardenDashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {requests.map((request, index) => (
+                                {filteredRequests.map((request, index) => (
                                     <tr key={request._id}>
                                         <td>{index + 1}</td>
                                         <td>{request.user ? request.user.name : 'Unknown'}</td>

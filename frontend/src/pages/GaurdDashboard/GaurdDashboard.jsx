@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import "./GaurdDashboard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,13 +9,14 @@ import {
   faHistory,
   faUserCircle,
   faSignOutAlt,
+  faSearch, // Import search icon
 } from "@fortawesome/free-solid-svg-icons";
 import { toast, ToastContainer } from "react-toastify";
 import OTPModal from "../../components/OTPModal";
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 
-const POLLING_INTERVAL = 10000; // Poll every 60 seconds
+const POLLING_INTERVAL = 10000; // Poll every 10 seconds
 
 const GuardDashboard = () => {
   const [approvedGatePasses, setApprovedGatePasses] = useState([]);
@@ -29,6 +30,7 @@ const GuardDashboard = () => {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [user, setUser] = useState(null);
   const [outClicked, setOutClicked] = useState({});
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -137,6 +139,35 @@ const GuardDashboard = () => {
     setModalData({ show: false, gatePassId: null, action: null });
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Filtered gate passes based on search term
+  const filteredGatePasses = useMemo(() => {
+    if (!searchTerm) return approvedGatePasses;
+
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return approvedGatePasses.filter((pass) => {
+      const userName = pass.user?.name?.toLowerCase() || "";
+      const uid = pass.user?.uid?.toLowerCase() || "";
+      const roomNo = pass.user?.roomNo?.toLowerCase() || "";
+      const destination = pass.destination?.toLowerCase() || "";
+      const reason = pass.reason?.toLowerCase() || "";
+      const date = new Date(pass.date).toLocaleDateString().toLowerCase();
+
+      return (
+        userName.includes(lowercasedTerm) ||
+        uid.includes(lowercasedTerm) ||
+        roomNo.includes(lowercasedTerm) ||
+        destination.includes(lowercasedTerm) ||
+        reason.includes(lowercasedTerm) ||
+        date.includes(lowercasedTerm)
+      );
+    });
+  }, [searchTerm, approvedGatePasses]);
+
   if (initialLoading) return <div className="loading">Loading approved gate passes...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
@@ -172,6 +203,16 @@ const GuardDashboard = () => {
           <h2>Guard Dashboard</h2>
         </div>
         <div className="header-right">
+          <div className="search-bar">
+            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search gate passes..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              aria-label="Search gate passes"
+            />
+          </div>
           {user && (
             <div className="user-info">
               <FontAwesomeIcon
@@ -196,7 +237,7 @@ const GuardDashboard = () => {
 
       <h2 className="mb-4">Guard Dashboard</h2>
       <h4 className="mb-3">Approved Gate Passes</h4>
-      {approvedGatePasses.length === 0 ? (
+      {filteredGatePasses.length === 0 ? (
         <p>No approved gate passes found.</p>
       ) : (
         <div className="table-responsive">
@@ -216,7 +257,7 @@ const GuardDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {approvedGatePasses.map((pass, index) => (
+              {filteredGatePasses.map((pass, index) => (
                 <tr key={pass._id}>
                   <td>{index + 1}</td>
                   <td>{pass.user ? pass.user.name : "Unknown"}</td>

@@ -48,3 +48,26 @@
 .logout-button:hover {
     color: #dc3545; /* Change to your preferred hover color */
 }
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
+  
+  .search-icon {
+    margin-right: 8px;
+    color: #555;
+  }
+  
+  .search-bar input {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .search-bar input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
