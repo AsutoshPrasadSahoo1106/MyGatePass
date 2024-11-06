@@ -250,7 +250,7 @@ const WardenRegister = () => {
 
           <button
             type="submit"
-            className="btn btn-primary w-100"
+            className="btn btn-danger w-100"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

@@ -92,6 +92,7 @@ const History = () => {
                     <>
                       <p><strong>Name:</strong> {pass.user.name}</p> {/* Assuming name is available */}
                       <p><strong>UID:</strong> {pass.user.uid}</p> {/* Assuming UID is available */}
+                      <p><strong>Room No:</strong> {pass.user.roomNo}</p>
                     </>
                   )}
                   <p><strong>Destination:</strong> {pass.destination}</p>

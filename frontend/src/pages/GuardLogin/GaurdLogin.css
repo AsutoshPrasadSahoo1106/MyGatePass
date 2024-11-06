@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: linear-gradient(135deg, #d1d5db, #e5e7ea);
     padding: 20px;
 }
 
@@ -21,7 +21,7 @@
 .login-form h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: #1e3c72;
+    color: #ef0000;
     font-weight: 700;
 }
 

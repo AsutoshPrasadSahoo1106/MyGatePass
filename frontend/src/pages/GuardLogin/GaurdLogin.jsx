@@ -122,7 +122,7 @@ const GuardLogin = () => {
                     </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
+                <button type="submit" className="btn btn-danger w-100" disabled={isSubmitting}>
                     {isSubmitting ? (
                         <>
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

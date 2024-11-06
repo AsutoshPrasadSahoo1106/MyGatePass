@@ -25,19 +25,19 @@
 
 .header-icon {
     cursor: pointer;
-    color: #1e3c72;
+    color: #ef0000;
     transition: color 0.2s ease-in-out;
 }
 
 .header-icon:hover {
-    color: #16325c;
+    color: #cd0b0e;
 }
 
 .header-center {
     margin: 0;
-    color: #1e3c72;
-    font-size: 1.5rem; /* Adjust font size for the title */
-    font-weight: 600; /* Make the title bold */
+    color: #ef0000;
+    font-size: 1.7rem; /* Adjust font size for the title */
+    font-weight: 700; /* Make the title bold */
 }
 
 .dashboard-main {
@@ -45,7 +45,7 @@
 }
 
 .gatepasses-section h3 {
-    color: #1e3c72;
+    color: #0b172d;
     margin-bottom: 20px;
 }
 

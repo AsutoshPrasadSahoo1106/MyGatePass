@@ -17,20 +17,20 @@
 .header-icon {
     cursor: pointer;
     font-size: 1.5rem;
-    color: #1e3c72;
+    color: #ef0000;
     transition: color 0.2s ease-in-out;
 }
 
 .header-icon:hover {
-    color: #2a5298;
+    color: #cd0b0e;
 }
 
 .header-center {
     flex: 1; /* Allow it to take available space */
     text-align: center; /* Center the title */
-    color: #1e3c72;
+    color: #ef0000;
     font-size: 1.8rem; /* Increase font size for prominence */
-    font-weight: 600; /* Bolder font for emphasis */
+    font-weight: 700; /* Bolder font for emphasis */
     padding-left: 190px; /* Instead of margin-left */
 }
 
@@ -42,7 +42,7 @@
 
 .header-link {
     cursor: pointer;
-    color: #1e3c72;
+    color: #ef0000;
     display: flex;
     align-items: center;
     gap: 5px; /* Space between icon and text */
@@ -50,7 +50,7 @@
 }
 
 .header-link:hover {
-    color: #2a5298; /* Change color on hover */
+    color: #cd0b0e; /* Change color on hover */
 }
 
 /* Responsive Adjustments */

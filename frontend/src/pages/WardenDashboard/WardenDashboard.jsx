@@ -206,6 +206,8 @@ const WardenDashboard = () => {
                                 <tr>
                                     <th>#</th>
                                     <th>Student Name</th>
+                                    <th>UID</th>
+                                    <th>Room No.</th>
                                     <th>Destination</th>
                                     <th>Reason</th>
                                     <th>Date</th>
@@ -219,6 +221,8 @@ const WardenDashboard = () => {
                                     <tr key={request._id}>
                                         <td>{index + 1}</td>
                                         <td>{request.user ? request.user.name : 'Unknown'}</td>
+                                        <td>{request.user.uid}</td>
+                                        <td>{request.user.roomNo}</td>
                                         <td>{request.destination}</td>
                                         <td>{request.reason}</td>
                                         <td>{new Date(request.date).toLocaleDateString()}</td>

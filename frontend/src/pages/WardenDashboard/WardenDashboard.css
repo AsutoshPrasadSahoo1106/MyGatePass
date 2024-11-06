@@ -27,17 +27,17 @@
 
 .header-icon {
     cursor: pointer;
-    color: #1e3c72;
+    color: #ef0000;
     transition: color 0.2s ease-in-out;
 }
 
 .header-icon:hover {
-    color: #16325c;
+    color: #cd0b0e;
 }
 
 .header-center h2 {
     margin: 0;
-    color: #1e3c72;
+    color: #ef0000;
 }
 
 .header-right {
@@ -54,7 +54,7 @@
 }
 
 .user-icon {
-    color: #1e3c72;
+    color: #ef0000;
 }
 
 .user-name {
@@ -64,7 +64,7 @@
 .logout-button {
     background-color: transparent;
     border: none;
-    color: #dc3545;
+    color: #ef0000;
     cursor: pointer;
     display: flex;
     align-items: center;

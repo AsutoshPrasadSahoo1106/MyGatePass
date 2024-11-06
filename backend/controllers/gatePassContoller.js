@@ -60,7 +60,7 @@ exports.getPendingGatePassesForWarden = async (req, res) => {
             status: 'Pending',
             user: { $in: await User.find({ hostel }).select('_id') } // Get all students in the hostel
         })
-            .populate('user', 'name email roomNo hostel phoneNo') // Populate user details
+            .populate('user', 'name email roomNo hostel phoneNo uid') // Populate user details
             .sort({ createdAt: -1 });
 
         res.status(200).json(pendingGatePasses);
@@ -71,7 +71,6 @@ exports.getPendingGatePassesForWarden = async (req, res) => {
 };
 
 // Get all approved gate passes for the guard
-// Get all approved gate passes for the guard
 exports.getApprovedGatePassesForGuard = async (req, res) => {
     try {
         const approvedGatePasses = await GatePass.find({
@@ -81,7 +80,7 @@ exports.getApprovedGatePassesForGuard = async (req, res) => {
                 { giveEntryBy: { $exists: false } } // Exclude if giveEntryBy field is present
             ]
         })
-            .populate('user', 'name email roomNo hostel phoneNo') // Populate user details
+            .populate('user', 'name email roomNo hostel phoneNo uid') // Populate user details
             .sort({ createdAt: -1 });
 
         res.status(200).json(approvedGatePasses);
@@ -148,7 +147,7 @@ exports.getGatePassHistory = async (req, res) => {
                 status: { $in: ['Approved', 'Rejected'] } // Only include approved or rejected statuses
             })
             .select('destination reason status actualInTime actualOutTime date') // Select specific fields to return
-            .populate('user', 'name email uid') // Populate user details if needed
+            .populate('user', 'name email uid roomNo') // Populate user details if needed
             .sort({ createdAt: -1 });
         } else if (userRole === 'guard') {
             gatePasses = await GatePass.find({ 
