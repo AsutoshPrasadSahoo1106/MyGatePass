@@ -206,6 +206,7 @@ const GuardDashboard = () => {
                 <th>#</th>
                 <th>Student Name</th>
                 <th>UID</th>
+                <th>Room No</th>
                 <th>Destination</th>
                 <th>Reason</th>
                 <th>Date</th>
@@ -220,6 +221,7 @@ const GuardDashboard = () => {
                   <td>{index + 1}</td>
                   <td>{pass.user ? pass.user.name : "Unknown"}</td>
                   <td>{pass.user.uid}</td>
+                  <td>{pass.user.roomNo}</td>
                   <td>{pass.destination}</td>
                   <td>{pass.reason}</td>
                   <td>{new Date(pass.date).toLocaleDateString()}</td>

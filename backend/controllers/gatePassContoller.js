@@ -166,7 +166,7 @@ exports.getGatePassHistory = async (req, res) => {
                 ]
             })
             .select('destination reason status actualInTime actualOutTime date') // Select specific fields to return
-            .populate('user', 'name email uid')
+            .populate('user', 'name email uid roomNo')
             .sort({ createdAt: -1 });
         } else {
             // Default behavior for students
