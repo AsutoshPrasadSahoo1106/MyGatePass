@@ -1,8 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './HomePage.css'; // Ensure your CSS styles are in this file
-import { FaUserGraduate, FaUserShield, FaUserLock } from 'react-icons/fa'; // Importing icons
-import logo from '../../assets/logo.png'; // Adjust the path based on your project structure
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./HomePage.css"; 
+import { FaUserGraduate, FaUserShield, FaUserLock } from "react-icons/fa"; // Importing icons
+import logo from "../../assets/logo.png";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,7 +20,9 @@ export default function HomePage() {
         </div>
 
         {/* Heading */}
-        <h1 className="text-center display-4 mb-5 text-black">Hostel Gate Pass Management System</h1>
+        <h1 className="text-center display-4 mb-5 text-black">
+          Hostel Gate Pass Management System
+        </h1>
 
         {/* Flex Container for Cards */}
         <div className="row justify-content-center">
@@ -29,10 +31,16 @@ export default function HomePage() {
             <div className="card-body text-center">
               <FaUserGraduate size={50} className="mb-3 text-danger" />
               <h2 className="card-title mb-4">Student</h2>
-              <button className="btn btn-danger w-100 mb-2" onClick={() => navigate('/student/login')}>
+              <button
+                className="btn btn-danger w-100 mb-2"
+                onClick={() => navigate("/student/login")}
+              >
                 Student Login
               </button>
-              <button className="btn btn-outline-danger w-100" onClick={() => navigate('/student/signup')}>
+              <button
+                className="btn btn-outline-danger w-100"
+                onClick={() => navigate("/student/signup")}
+              >
                 Student Register
               </button>
             </div>
@@ -43,10 +51,16 @@ export default function HomePage() {
             <div className="card-body text-center">
               <FaUserShield size={50} className="mb-3 text-danger" />
               <h2 className="card-title mb-4">Warden</h2>
-              <button className="btn btn-danger w-100 mb-2" onClick={() => navigate('/warden/login')}>
+              <button
+                className="btn btn-danger w-100 mb-2"
+                onClick={() => navigate("/warden/login")}
+              >
                 Warden Login
               </button>
-              <button className="btn btn-outline-danger w-100" onClick={() => navigate('/warden/signup')}>
+              <button
+                className="btn btn-outline-danger w-100"
+                onClick={() => navigate("/warden/signup")}
+              >
                 Warden Register
               </button>
             </div>
@@ -57,10 +71,16 @@ export default function HomePage() {
             <div className="card-body text-center">
               <FaUserLock size={50} className="mb-3 text-danger" />
               <h2 className="card-title mb-4">Guard</h2>
-              <button className="btn btn-danger w-100 mb-2" onClick={() => navigate('/guard/login')}>
+              <button
+                className="btn btn-danger w-100 mb-2"
+                onClick={() => navigate("/guard/login")}
+              >
                 Guard Login
               </button>
-              <button className="btn btn-outline-danger w-100" onClick={() => navigate('/guard/signup')}>
+              <button
+                className="btn btn-outline-danger w-100"
+                onClick={() => navigate("/guard/signup")}
+              >
                 Guard Register
               </button>
             </div>

@@ -12,9 +12,9 @@ const app = express();
 connectDB();
 
 // Use CORS middleware
-app.use(cors()); // Enable CORS for all routes
+app.use(cors()); 
 
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json()); 
 
 // Use Routes
 app.use('/api/users', userRoutes);
