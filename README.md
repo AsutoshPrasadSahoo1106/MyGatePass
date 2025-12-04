@@ -1,6 +1,6 @@
 ---
 
-## College Gate Pass Management System – README.md
+
 
 
 # 🏫 Hostel Gate Pass Management System
